@@ -1,6 +1,5 @@
 import { StatsStore } from '../utils/parser';
 import { Cloud } from '../services/Cloud';
-import type { Game } from '../services/Cloud';
 
 export function renderDashboard(container: HTMLElement) {
   const localGames = StatsStore.getAllGames();

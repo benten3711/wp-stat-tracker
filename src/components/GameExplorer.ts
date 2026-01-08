@@ -1,8 +1,7 @@
 import { Cloud } from '../services/Cloud';
-import type { Game } from '../services/Cloud';
 
 export function renderGameExplorer(container: HTMLElement) {
-    container.innerHTML = `
+  container.innerHTML = `
     <div class="animate-fade-in">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
         <button id="back-home-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.1);">← Back</button>
@@ -23,24 +22,24 @@ export function renderGameExplorer(container: HTMLElement) {
     </div>
   `;
 
-    const searchInput = container.querySelector('#game-search-input') as HTMLInputElement;
-    const resultsContainer = container.querySelector('#games-results-container')!;
-    const searchBtn = container.querySelector('#search-action-btn')!;
+  const searchInput = container.querySelector('#game-search-input') as HTMLInputElement;
+  const resultsContainer = container.querySelector('#games-results-container')!;
+  const searchBtn = container.querySelector('#search-action-btn')!;
 
-    const performSearch = async () => {
-        const query = searchInput.value;
-        if (!query) return;
+  const performSearch = async () => {
+    const query = searchInput.value;
+    if (!query) return;
 
-        resultsContainer.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Searching global registry...</p>';
+    resultsContainer.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">Searching global registry...</p>';
 
-        const games = await Cloud.searchGlobalGames(query);
+    const games = await Cloud.searchGlobalGames(query);
 
-        if (games.length === 0) {
-            resultsContainer.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">No games found.</p>';
-            return;
-        }
+    if (games.length === 0) {
+      resultsContainer.innerHTML = '<p style="text-align: center; grid-column: 1/-1;">No games found.</p>';
+      return;
+    }
 
-        resultsContainer.innerHTML = games.map(game => `
+    resultsContainer.innerHTML = games.map(game => `
       <div class="card glass animate-fade-in" style="padding: 1.5rem; border-left: 4px solid var(--accent);">
         <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
           <span style="font-size: 0.7rem; color: var(--accent); font-weight: bold; text-transform: uppercase;">${game.tournament}</span>
@@ -56,31 +55,31 @@ export function renderGameExplorer(container: HTMLElement) {
       </div>
     `).join('');
 
-        resultsContainer.querySelectorAll('.import-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const target = e.currentTarget as HTMLButtonElement;
-                const id = target.getAttribute('data-id');
-                const game = games.find(g => g.id === id);
+    resultsContainer.querySelectorAll('.import-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const id = target.getAttribute('data-id');
+        const game = games.find(g => g.id === id);
 
-                if (game) {
-                    target.disabled = true;
-                    target.innerHTML = 'Importing...';
-                    await Cloud.saveGameToAccount(game);
-                    target.innerHTML = '✅ Imported';
-                    target.style.background = 'rgba(0,255,0,0.1)';
-                    target.style.borderColor = '#00ff00';
-                    target.style.color = '#00ff00';
-                }
-            });
-        });
-    };
-
-    searchBtn.addEventListener('click', performSearch);
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') performSearch();
+        if (game) {
+          target.disabled = true;
+          target.innerHTML = 'Importing...';
+          await Cloud.saveGameToAccount(game);
+          target.innerHTML = '✅ Imported';
+          target.style.background = 'rgba(0,255,0,0.1)';
+          target.style.borderColor = '#00ff00';
+          target.style.color = '#00ff00';
+        }
+      });
     });
+  };
 
-    container.querySelector('#back-home-btn')?.addEventListener('click', () => {
-        location.reload(); // Simple way to return to main.ts landing page
-    });
+  searchBtn.addEventListener('click', performSearch);
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') performSearch();
+  });
+
+  container.querySelector('#back-home-btn')?.addEventListener('click', () => {
+    location.reload(); // Simple way to return to main.ts landing page
+  });
 }

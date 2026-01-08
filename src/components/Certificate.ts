@@ -1,10 +1,7 @@
 import type { Game } from '../services/Cloud';
 
 export function renderCertificate(container: HTMLElement, game: Game) {
-    // Save current scroll position
-    const scrollPos = window.scrollY;
-
-    container.innerHTML = `
+  container.innerHTML = `
     <div class="certificate-view animate-fade-in" style="background: white; color: #1a1a1a; padding: 4rem; max-width: 850px; margin: 2rem auto; border: 15px solid #1a1a1a; position: relative;">
       <button id="close-cert" style="position: absolute; top: -50px; left: 0; background: transparent; border: 1px solid white; color: white;">← Back to Dashboard</button>
       <button id="print-cert" style="position: absolute; top: -50px; right: 0; background: var(--accent); color: white;">Print / Save as PDF</button>
@@ -70,22 +67,22 @@ export function renderCertificate(container: HTMLElement, game: Game) {
     </div>
   `;
 
-    document.querySelector('#close-cert')?.addEventListener('click', () => {
-        // Back to dashboard
-        location.reload();
-    });
+  document.querySelector('#close-cert')?.addEventListener('click', () => {
+    // Back to dashboard
+    location.reload();
+  });
 
-    document.querySelector('#print-cert')?.addEventListener('click', () => {
-        window.print();
-    });
+  document.querySelector('#print-cert')?.addEventListener('click', () => {
+    window.print();
+  });
 
-    // Scroll to top to see the certificate
-    window.scrollTo(0, 0);
+  // Scroll to top to see the certificate
+  window.scrollTo(0, 0);
 
-    // Custom print styles for the body to hide everything but the certificate
-    const style = document.createElement('style');
-    style.id = 'print-cert-style';
-    style.innerHTML = `
+  // Custom print styles for the body to hide everything but the certificate
+  const style = document.createElement('style');
+  style.id = 'print-cert-style';
+  style.innerHTML = `
     @media print {
       body * { visibility: hidden; }
       .certificate-view, .certificate-view * { visibility: visible; }
@@ -93,5 +90,5 @@ export function renderCertificate(container: HTMLElement, game: Game) {
       #close-cert, #print-cert { display: none; }
     }
   `;
-    document.head.appendChild(style);
+  document.head.appendChild(style);
 }
