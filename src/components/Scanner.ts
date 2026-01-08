@@ -139,7 +139,7 @@ export function renderScanner(container: HTMLElement) {
            </div>
         </div>
 
-        <div class="glass" style="overflow-x: auto; margin-bottom: 2rem;">
+        <div class="glass" style="overflow-x: auto; margin-bottom: 1rem;">
           <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
             <thead>
               <tr style="border-bottom: 1px solid var(--border-glass); background: rgba(255,255,255,0.03);">
@@ -147,32 +147,70 @@ export function renderScanner(container: HTMLElement) {
                 <th style="padding: 1rem;">PLAYER NAME</th>
                 <th style="padding: 1rem; text-align: center;">GOALS</th>
                 <th style="padding: 1rem; text-align: center;">FOULS</th>
+                <th style="padding: 1rem; text-align: center;">ACTION</th>
               </tr>
             </thead>
             <tbody id="edit-table-body">
               ${currentData.players.map((p, i) => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                  <td style="padding: 0.8rem; text-align: center;">${p.no}</td>
+                  <td style="padding: 0.8rem; text-align: center;">
+                    <input type="text" class="table-edit no-edit" value="${p.no}" style="background: transparent; border: none; width: 30px; text-align: center;">
+                  </td>
                   <td style="padding: 0.8rem;">
-                    <input type="text" class="table-edit name-edit" data-idx="${i}" value="${p.name}" style="background: transparent; border: none; padding: 0.2rem; width: 100%;">
+                    <input type="text" class="table-edit name-edit" value="${p.name}" style="background: transparent; border: none; padding: 0.2rem; width: 100%;">
                   </td>
                   <td style="padding: 0.8rem; text-align: center;">
-                    <input type="number" class="table-edit goal-edit" data-idx="${i}" value="${p.totalGoals}" style="background: transparent; border: none; width: 50px; text-align: center; color: var(--accent); font-weight: bold;">
+                    <input type="number" class="table-edit goal-edit" value="${p.totalGoals}" style="background: transparent; border: none; width: 50px; text-align: center; color: var(--accent); font-weight: bold;">
                   </td>
                   <td style="padding: 0.8rem; text-align: center;">
-                    <input type="text" class="table-edit foul-edit" data-idx="${i}" value="${p.fouls.length}" style="background: transparent; border: none; width: 50px; text-align: center;">
+                    <input type="number" class="table-edit foul-edit" value="${p.fouls.length}" style="background: transparent; border: none; width: 50px; text-align: center;">
+                  </td>
+                  <td style="padding: 0.8rem; text-align: center;">
+                    <button class="remove-player-btn" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 0.5rem;">✕</button>
                   </td>
                 </tr>
               `).join('')}
             </tbody>
           </table>
         </div>
+        
+        <button id="add-player-row" style="background: rgba(255,255,255,0.05); border: 1px dashed var(--border-glass); width: 100%; padding: 0.8rem; color: var(--text-secondary); margin-bottom: 2rem;">+ Add Player Manually</button>
 
         <button id="finalize-save" style="width: 100%; padding: 1.5rem; font-weight: bold; background: var(--gradient-accent); letter-spacing: 1px;">
           FINALIZE & ARCHIVE GAME
         </button>
       </div>
     `;
+
+    container.querySelector('#add-player-row')?.addEventListener('click', () => {
+      const tbody = container.querySelector('#edit-table-body')!;
+      const tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+      tr.innerHTML = `
+        <td style="padding: 0.8rem; text-align: center;">
+          <input type="text" class="table-edit no-edit" value="" placeholder="#" style="background: transparent; border: none; width: 30px; text-align: center;">
+        </td>
+        <td style="padding: 0.8rem;">
+          <input type="text" class="table-edit name-edit" value="" placeholder="New Player Name" style="background: transparent; border: none; padding: 0.2rem; width: 100%;">
+        </td>
+        <td style="padding: 0.8rem; text-align: center;">
+          <input type="number" class="table-edit goal-edit" value="0" style="background: transparent; border: none; width: 50px; text-align: center; color: var(--accent); font-weight: bold;">
+        </td>
+        <td style="padding: 0.8rem; text-align: center;">
+          <input type="number" class="table-edit foul-edit" value="0" style="background: transparent; border: none; width: 50px; text-align: center;">
+        </td>
+        <td style="padding: 0.8rem; text-align: center;">
+          <button class="remove-player-btn" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 0.5rem;">✕</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      tr.querySelector('.remove-player-btn')?.addEventListener('click', () => tr.remove());
+    });
+
+    container.querySelectorAll('.remove-player-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => (e.target as HTMLElement).closest('tr')?.remove());
+    });
 
     document.querySelector('#finalize-save')?.addEventListener('click', async () => {
       if (!currentData) return;
@@ -187,12 +225,13 @@ export function renderScanner(container: HTMLElement) {
 
       const rows = container.querySelectorAll('#edit-table-body tr');
       const updatedPlayers: PlayerStats[] = Array.from(rows).map(row => {
-        const idx = parseInt(row.querySelector('.name-edit')?.getAttribute('data-idx') || '0');
         return {
-          ...currentData!.players[idx],
+          no: (row.querySelector('.no-edit') as HTMLInputElement).value,
           name: (row.querySelector('.name-edit') as HTMLInputElement).value,
-          totalGoals: parseInt((row.querySelector('.goal-edit') as HTMLInputElement).value),
-          // Simplified fouls update for mock
+          usaWpNo: 'TEMP_' + Math.random().toString(36).substr(2, 5),
+          goals: Array((row.querySelector('.goal-edit') as HTMLInputElement).valueAsNumber).fill(1).map((_, i) => i < 4 ? 1 : 0), // Mocked quarters
+          totalGoals: (row.querySelector('.goal-edit') as HTMLInputElement).valueAsNumber,
+          fouls: Array((row.querySelector('.foul-edit') as HTMLInputElement).valueAsNumber).fill('E')
         };
       });
 
@@ -202,7 +241,7 @@ export function renderScanner(container: HTMLElement) {
         players: updatedPlayers
       };
 
-      // 2. Save Game (and local copy for public stats too)
+      // 2. Save Game 
       StatsStore.saveGame(updatedGameData);
 
       const gameForCloud: Game = {
