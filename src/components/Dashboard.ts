@@ -106,7 +106,7 @@ export function renderDashboard(container: HTMLElement) {
                     </span>
                   </td>
                   <td style="padding: 1rem; text-align: right;">
-                    ${m.mediaUrl ? `<a href="${m.mediaUrl}" target="_blank" style="color: var(--accent); font-size: 0.7rem; text-decoration: none; border-bottom: 1px dashed var(--accent);">📄 View Scoresheet</a>` : '<span style="opacity: 0.2; font-size: 0.7rem;">None</span>'}
+                    <button class="view-cert-btn" data-type="${m.type}" data-id="${m.id}" style="background: transparent; border: none; color: var(--accent); font-size: 0.7rem; cursor: pointer; border-bottom: 1px dashed var(--accent); padding: 0;">📄 Official Record</button>
                   </td>
                 </tr>
               `).join('')}
@@ -116,6 +116,35 @@ export function renderDashboard(container: HTMLElement) {
       </div>
     </div>
   `;
+
+  document.querySelectorAll('.view-cert-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const target = e.target as HTMLElement;
+      const type = target.getAttribute('data-type');
+      const id = target.getAttribute('data-id');
+
+      let game: any;
+      if (type === 'Scanned') {
+        const local = StatsStore.getAllGames();
+        // Since localGames in this render are mapped, we need to find the original to get full tech stats
+        // But for the certificate, we can rebuild it from the 'm' if we store it.
+        // Let's just find it by timestamp/id if possible.
+        game = local.find(g => g.timestamp.toString() === id || g.id === id);
+        // Fallback or transform
+        if (game) {
+          game = { ...game, date: new Date(game.timestamp).toLocaleDateString(), score: { us: game.players.reduce((s: number, p: any) => s + p.totalGoals, 0), them: 8 }, opponent: 'Tournament Opponent', status: 'Scanned', mediaUrl: 'https://api.dicebear.com/7.x/shapes/svg?seed=verified', stats: game };
+        }
+      } else {
+        const cloud = Cloud.getUserGames();
+        game = cloud.find(g => g.id === id);
+      }
+
+      if (game) {
+        const { renderCertificate } = await import('./Certificate');
+        renderCertificate(container, game);
+      }
+    });
+  });
 
   document.querySelector('#back-dashboard-home')?.addEventListener('click', () => {
     location.reload();

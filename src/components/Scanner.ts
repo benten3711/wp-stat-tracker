@@ -86,7 +86,7 @@ export function renderScanner(container: HTMLElement) {
         clearInterval(interval);
         captureAndParse();
       }
-    }, 60);
+    }, 10); // Sped up for better UX in simulation
   }
 
   async function captureAndParse() {
@@ -151,7 +151,7 @@ export function renderScanner(container: HTMLElement) {
               </tr>
             </thead>
             <tbody id="edit-table-body">
-              ${currentData.players.map((p, i) => `
+              ${currentData.players.map((p) => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                   <td style="padding: 0.8rem; text-align: center;">
                     <input type="text" class="table-edit no-edit" value="${p.no}" style="background: transparent; border: none; width: 30px; text-align: center;">
@@ -263,4 +263,7 @@ export function renderScanner(container: HTMLElement) {
       location.reload();
     });
   }
+
+  // Initial render
+  render();
 }
