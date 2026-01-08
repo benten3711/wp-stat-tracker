@@ -83,11 +83,12 @@ export function renderDashboard(container: HTMLElement) {
               <tr>
                 <th style="padding: 1rem; text-align: left;">EVENT / OPPONENT</th>
                 <th style="padding: 1rem; text-align: center;">RESULT</th>
-                <th style="padding: 1rem; text-align: right;">STATUS</th>
+                <th style="padding: 1rem; text-align: center;">STATUS</th>
+                <th style="padding: 1rem; text-align: right;">RECORDS</th>
               </tr>
             </thead>
             <tbody>
-              ${[...localGames.map(g => ({ ...g, type: 'Scanned', opponent: 'Tournament Opponent', score: { us: g.players.reduce((sum, p) => sum + p.totalGoals, 0), them: 8 }, date: new Date(g.timestamp).toLocaleDateString() })),
+              ${[...localGames.map(g => ({ ...g, type: 'Scanned', opponent: 'Tournament Opponent', score: { us: g.players.reduce((sum, p) => sum + p.totalGoals, 0), them: 8 }, date: new Date(g.timestamp).toLocaleDateString(), mediaUrl: 'https://api.dicebear.com/7.x/shapes/svg?seed=verified' })),
     ...cloudGames.map(g => ({ ...g, type: 'Imported', date: g.date }))]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .map(m => `
@@ -99,10 +100,13 @@ export function renderDashboard(container: HTMLElement) {
                   <td style="padding: 1rem; text-align: center; font-weight: bold;">
                     ${m.score.us} - ${m.score.them}
                   </td>
-                  <td style="padding: 1rem; text-align: right;">
+                  <td style="padding: 1rem; text-align: center;">
                     <span style="padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; background: ${m.type === 'Scanned' ? 'rgba(0,243,255,0.1)' : 'rgba(16,185,129,0.1)'}; color: ${m.type === 'Scanned' ? 'var(--accent)' : '#10b981'}; border: 1px solid ${m.type === 'Scanned' ? 'var(--accent)' : '#10b981'};">
                       ${m.type.toUpperCase()}
                     </span>
+                  </td>
+                  <td style="padding: 1rem; text-align: right;">
+                    ${m.mediaUrl ? `<a href="${m.mediaUrl}" target="_blank" style="color: var(--accent); font-size: 0.7rem; text-decoration: none; border-bottom: 1px dashed var(--accent);">📄 View Scoresheet</a>` : '<span style="opacity: 0.2; font-size: 0.7rem;">None</span>'}
                   </td>
                 </tr>
               `).join('')}

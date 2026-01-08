@@ -13,6 +13,7 @@ export interface Game {
     score: { us: number; them: number };
     status: 'Scanned' | 'Imported';
     tournament?: string;
+    mediaUrl?: string; // Base64 or Blob storage path
     stats: any; // Simplified for now
 }
 
