@@ -2,6 +2,7 @@ import { renderScanner } from './components/Scanner';
 import { renderSearch } from './components/Search';
 import { renderDashboard } from './components/Dashboard';
 import { renderLogin, AuthStore } from './components/Login';
+import { renderGameExplorer } from './components/GameExplorer';
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
@@ -27,7 +28,7 @@ function renderLandingPage() {
         <button id="logout-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); font-size: 0.7rem; padding: 0.5rem 1rem;">Switch Profile</button>
       </div>
 
-      <div class="grid-container">
+      <div class="grid-container" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
         <div class="card glass">
           <div style="font-size: 3rem; margin-bottom: 1rem;">📷</div>
           <h3>Scanner</h3>
@@ -36,10 +37,10 @@ function renderLandingPage() {
         </div>
 
         <div class="card glass">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
-          <h3>Registry</h3>
-          <p style="font-size: 0.8rem; margin-top: 1rem; color: var(--text-secondary);">Browse historical verified stats.</p>
-          <button id="search-btn" style="background: transparent; border: 1px solid var(--accent);">Search Players</button>
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🌐</div>
+          <h3>Match Explorer</h3>
+          <p style="font-size: 0.8rem; margin-top: 1rem; color: var(--text-secondary);">Lookup tournament games to import.</p>
+          <button id="explorer-btn" style="background: transparent; border: 1px solid var(--accent);">Browse Games</button>
         </div>
 
         <div class="card glass">
@@ -48,6 +49,13 @@ function renderLandingPage() {
           <p style="font-size: 0.8rem; margin-top: 1rem; color: var(--text-secondary);">Real-time performance distribution.</p>
           <button id="stats-btn" style="background: transparent; border: 1px solid var(--accent);">View Team Data</button>
         </div>
+
+        <div class="card glass">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+          <h3>Registry</h3>
+          <p style="font-size: 0.8rem; margin-top: 1rem; color: var(--text-secondary);">Browse historical verified stats.</p>
+          <button id="search-btn" style="background: transparent; border: 1px solid var(--accent);">Search Players</button>
+        </div>
       </div>
     </div>
   `;
@@ -55,6 +63,10 @@ function renderLandingPage() {
   // Setup simple event listeners for interaction
   document.querySelector('#camera-btn')?.addEventListener('click', () => {
     renderScanner(app);
+  });
+
+  document.querySelector('#explorer-btn')?.addEventListener('click', () => {
+    renderGameExplorer(app);
   });
 
   document.querySelector('#search-btn')?.addEventListener('click', () => {
